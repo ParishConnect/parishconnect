@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "parish-schema",
+  "title": "ParishConnect Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the parish"
+    },
+    "address": {
+      "type": "string",
+      "format": "address",
+      "description": "The address of the parish"
+    },
+    "phone": {
+      "type": "string",
+      "format": "phone",
+      "description": "The phone number of the parish"
+    },
+    "email": {
+      "type": "string",
+      "description": "The email address of the parish"
+    },
+    "website": {
+      "type": "string",
+      "format": "uri",
+      "description": "The website of the parish"
+    },
+    "masstimes": {
+      "type": "array",
+      "description": "The mass times of the parish",
+      "items": {
+        "type": "object",
+        "description": "https://schema.org/Schedule",
+        "required": ["@context", "@type", "duration", "eventSchedule"],
+        "properties": {
+          "@context": { "const": "https://schema.org/" },
+          "@type": { "const": "Event" },
+          "url": { "type": "string", "format": "uri" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "duration": { "type": "string", "pattern": "^PT\\d+M$" },
+          "eventSchedule": {
+            "type": "object",
+            "required": [
+              "@context",
+              "@type",
+              "startDate",
+              "repeatFrequency",
+              "startTime",
+              "scheduleTimezone"
+            ],
+            "properties": {
+              "@context": { "const": "https://schema.org/" },
+              "@type": { "const": "Schedule" },
+
+              "startDate": { "type": "string", "format": "date" },
+              "endDate": { "type": "string", "format": "date" },
+
+              "repeatFrequency": { "type": "string", "format": "duration" },
+              "byDay": { "type": "string", "format": "uri" },
+              "byMonth": { "type": "integer", "minimum": 1, "maximum": 12 },
+              "byMonthDay": { "type": "integer", "minimum": 1, "maximum": 31 },
+              "byMonthWeek": { "type": "integer", "minimum": 1, "maximum": 5 },
+
+              "startTime": { "type": "string", "format": "time" },
+              "endTime": { "type": "string", "format": "time" },
+
+              "scheduleTimezone": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
