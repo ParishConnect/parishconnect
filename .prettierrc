@@ -1,0 +1,12 @@
+{
+  "printWidth": 120,
+  "semi": false,
+  "overrides": [
+    {
+      "files": "*.ts,*.js",
+      "options": {
+        "htmlWhitespaceSensitivity": "strict"
+      }
+    }
+  ]
+}

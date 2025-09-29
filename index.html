@@ -9,8 +9,66 @@
 </head>
 
 <body>
-  <parishconnect-widget>
-  </parishconnect-widget>
+  <script type="application/ld+json" id="parishconnect-data">
+  {
+  "@context": "https://schema.org",
+  "@type": "CatholicChurch",
+  "name": "Holy Trinity Parish",
+  "url": "https://localhost:5173",
+
+  "events": [
+    {
+      "@type": "Event",
+      "url": "https://localhost:5173",
+      "name": "Holy Mass",
+      "duration": "PT1H",
+      "eventSchedule": [
+        {
+          "@type": "Schedule",
+          "startDate": "2023-01-01",
+          "startTime": "09:00",
+          "repeatFrequency": "P1W",
+          "description": "Daily Mass",
+          "byDay": [
+            "https://schema.org/Monday",
+            "https://schema.org/Tuesday",
+            "https://schema.org/Wednesday",
+            "https://schema.org/Thursday",
+            "https://schema.org/Friday"
+          ],
+          "scheduleTimezone": "America/New_York"
+        },
+        {
+          "@type": "Schedule",
+          "startDate": "2023-01-01",
+          "startTime": "17:00",
+          "repeatFrequency": "P1W",
+          "byDay": ["https://schema.org/Saturday"],
+          "scheduleTimezone": "America/New_York"
+        },
+        {
+          "@type": "Schedule",
+          "startDate": "2023-01-01",
+          "startTime": "09:00",
+          "repeatFrequency": "P1W",
+          "byDay": ["https://schema.org/Sunday"],
+          "scheduleTimezone": "America/New_York"
+        },
+        {
+          "@type": "Schedule",
+          "startDate": "2023-01-01",
+          "startTime": "11:00",
+          "repeatFrequency": "P1W",
+          "byDay": ["https://schema.org/Sunday"],
+          "scheduleTimezone": "America/New_York"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <parishconnect-widget></parishconnect-widget>
+  <!-- <button id="edit-widget">Edit Widget</button> -->
 </body>
 
 </html>

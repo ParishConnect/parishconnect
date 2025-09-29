@@ -1,56 +1,57 @@
-import { LitElement, css, html } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import { LitElement, css, html } from "lit"
+import { customElement } from "lit/decorators.js"
+import { safelyParseJSON } from "./lib/utils"
+import { unfurlEventsFromLdJson } from "./lib/ld+json-to-rrule"
+import { toText } from "rrule-temporal/totext"
 
-import { toText } from 'rrule-temporal/totext'
-import { ldJsonToRRule } from './lib/ld+json-to-rrule'
-import { rruleToLdJson } from './lib/rrule-to-ld+json'
-
-const example = `{
-  "@context": "https://schema.org/",
-  "@type": "Event",
-  "url": "http://www.example.org/events/1",
-  "name": "Wednesday Mass",
-  "description": "A weekly Wednesday Mass",
-  "duration": "PT60M",
-  "eventSchedule": {
-     "@type": "Schedule",
-     "startDate": "2017-01-01",
-     "endDate": "2017-12-31",
-     "repeatFrequency": "P1W",
-     "byDay": "https://schema.org/Wednesday",
-     "startTime": "19:00:00",
-     "endTime": "20:00:00",
-     "scheduleTimezone": "Europe/London"
-  }
-}`
-
-const rule = ldJsonToRRule(example)
-const backToJSONLD = rruleToLdJson(rule)
-
-/**
- * ParishConnect Widget
- */
-@customElement('parishconnect-widget')
+@customElement("parishconnect-widget")
 export class ParishConnectWidget extends LitElement {
-  render() {
-    return html/*html*/ `<div>
-      <h1>ParishConnect Widget</h1>
-      <pre>${example}</pre>
-      <span>${toText(rule)}</span>
-      <pre>${JSON.stringify(backToJSONLD, null, 3)}</pre>
-    </div>`
-  }
-
   static styles = css/*css*/ `
     :host {
-      font-family: --apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-        Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-family: --apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+        "Helvetica Neue", sans-serif;
     }
   `
+
+  #findParishData() {
+    let script: HTMLScriptElement | null = null
+    const parishConnectDataMarkedScript = document.getElementById("parishconnect-data")
+    if (parishConnectDataMarkedScript?.tagName === "SCRIPT") {
+      script = parishConnectDataMarkedScript as HTMLScriptElement
+    }
+
+    const jsonLdScripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]')).find((script) =>
+      script.textContent?.includes("CatholicChurch")
+    )
+
+    if (jsonLdScripts) {
+      script = jsonLdScripts as HTMLScriptElement
+    }
+
+    if (!script) {
+      return null
+    }
+
+    return safelyParseJSON(script.textContent || "")
+  }
+
+  #parishData = this.#findParishData()
+  #rules = unfurlEventsFromLdJson(this.#parishData)
+
+  render() {
+    return html/*html*/ `
+      <pre>
+
+        <h1>Mass Times for ${this.#parishData?.name || "Unknown Parish"}</h1>
+        ${this.#rules.map((rule) => html`<div>${rule.toString()}</div>`)}
+
+      </pre>
+    `
+  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'parishconnect-widget': ParishConnectWidget
+    "parishconnect-widget": ParishConnectWidget
   }
 }
