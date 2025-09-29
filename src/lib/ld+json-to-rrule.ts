@@ -1,23 +1,9 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { RRuleTemporal } from 'rrule-temporal'
-import { safelyParseJSON } from './utils'
+import { mapByDayToRRule, safelyParseJSON } from './utils'
+import type { Freq } from './types'
 
-type Freq = ReturnType<(typeof RRuleTemporal)['prototype']['options']>['freq']
-
-function mapByDayToRRule(byDay: string): string | null {
-  const dayMap: { [key: string]: string } = {
-    'https://schema.org/Monday': 'MO',
-    'https://schema.org/Tuesday': 'TU',
-    'https://schema.org/Wednesday': 'WE',
-    'https://schema.org/Thursday': 'TH',
-    'https://schema.org/Friday': 'FR',
-    'https://schema.org/Saturday': 'SA',
-    'https://schema.org/Sunday': 'SU',
-  }
-  return dayMap[byDay] || null
-}
-
-export function LdJsonToRRule(ldJson: string): string {
+export function ldJsonToRRule(ldJson: string): string {
   const obj = safelyParseJSON(ldJson)
   if (!obj) return ''
 
@@ -33,18 +19,18 @@ export function LdJsonToRRule(ldJson: string): string {
   }
 
   // Extract relevant fields
-  const startDate = schedule.startDate // e.g., "2017-01-01"
-  const endDate = schedule.endDate // e.g., "2017-12-31"
+  const startDate = schedule.startDate
+  const endDate = schedule.endDate
 
-  const repeatFrequency = schedule.repeatFrequency // e.g., "P1W"
-  const repeatCount = schedule.repeatCount // e.g., 10
-  const byDay = mapByDayToRRule(schedule.byDay) // e.g., "https://schema.org/Wednesday"
-  const byMonth = schedule.byMonth // e.g., 1
-  const byMonthDay = schedule.byMonthDay // e.g., 15
-  const byMonthWeek = schedule.byMonthWeek // e.g., 2
+  const repeatFrequency = schedule.repeatFrequency
+  const repeatCount = schedule.repeatCount
+  const byDay = mapByDayToRRule(schedule.byDay)
+  const byMonth = schedule.byMonth
+  const byMonthDay = schedule.byMonthDay
+  const byMonthWeek = schedule.byMonthWeek
 
-  const startTime = schedule.startTime // e.g., "19:00:00"
-  const endTime = schedule.endTime // e.g., "20:00:00"
+  const startTime = schedule.startTime
+  const endTime = schedule.endTime
 
   const scheduleTimezone = schedule.scheduleTimezone
 

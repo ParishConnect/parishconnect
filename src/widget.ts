@@ -2,7 +2,8 @@ import { LitElement, css, html } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
 import { toText } from 'rrule-temporal/totext'
-import { LdJsonToRRule } from './lib/ld+json-to-rrule'
+import { ldJsonToRRule } from './lib/ld+json-to-rrule'
+import { rruleToLdJson } from './lib/rrule-to-ld+json'
 
 const example = `{
   "@context": "https://schema.org/",
@@ -23,7 +24,8 @@ const example = `{
   }
 }`
 
-const rule = LdJsonToRRule(example)
+const rule = ldJsonToRRule(example)
+const backToJSONLD = rruleToLdJson(rule)
 
 /**
  * ParishConnect Widget
@@ -35,6 +37,7 @@ export class ParishConnectWidget extends LitElement {
       <h1>ParishConnect Widget</h1>
       <pre>${example}</pre>
       <span>${toText(rule)}</span>
+      <pre>${JSON.stringify(backToJSONLD, null, 3)}</pre>
     </div>`
   }
 
