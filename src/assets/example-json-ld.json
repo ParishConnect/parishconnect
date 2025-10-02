@@ -1,17 +1,4 @@
-<!doctype html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ParishConnect Widget</title>
-  <script type="module" src="/src/widget.ts"></script>
-  <script type="module" src="/src/render-root.ts"></script>
-</head>
-
-<body>
-  <script type="application/ld+json" id="parishconnect-data">
-  {
+{
   "@context": "https://schema.org",
   "@type": "CatholicChurch",
   "@id": "https://www.bskchurch.ca#church",
@@ -36,7 +23,7 @@
   "address": {
     "@id": "https://www.bskchurch.ca#address",
     "@type": "PostalAddress",
-    "addressCountry": "CA", 
+    "addressCountry": "CA",
     "addressLocality": "Kitchener",
     "addressRegion": "ON",
     "postalCode": "N2E 2N6",
@@ -49,7 +36,11 @@
       "url": "https://www.bskchurch.ca",
       "name": "Holy Mass",
       "duration": "PT1H",
-      "location": { "@type": "Place", "name": "Holy Trinity Parish", "address":{ "@id": "https://www.bskchurch.ca#address" } },
+      "location": {
+        "@type": "Place",
+        "name": "Holy Trinity Parish",
+        "address": { "@id": "https://www.bskchurch.ca#address" }
+      },
       "organizer": { "@id": "https://www.bskchurch.ca#church" },
       "description": "Join us for Holy Mass at Holy Trinity Parish.",
       "eventStatus": "https://schema.org/EventScheduled",
@@ -98,10 +89,3 @@
     }
   ]
 }
-  </script>
-  <parishconnect-widget></parishconnect-widget>
-  <render-root></render-root>
-  <!-- <button id="edit-widget">Edit Widget</button> -->
-</body>
-
-</html>

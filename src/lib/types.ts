@@ -1,39 +1,46 @@
+import type { Temporal } from "@js-temporal/polyfill"
 import type { RRuleTemporal } from "rrule-temporal"
+import type { CatholicChurch, DayOfWeek, Role } from "schema-dts"
 
-export type Freq = ReturnType<(typeof RRuleTemporal)["prototype"]["options"]>["freq"]
+export type SchemaValue<T, TProperty extends string> = T | Role<T, TProperty> | readonly (T | Role<T, TProperty>)[]
+/**
+ * Unwrap to a primitive type from a schema-dts schema object.
+ */
+export type UnwrapSchemaValue<T> = Extract<T, string | number | boolean>
+export type ExtractSchemaValue<T> = T extends SchemaValue<infer U, any> ? U : never
 
-export type LdJsonByDay = `https://schema.org/${
-  | "Monday"
-  | "Tuesday"
-  | "Wednesday"
-  | "Thursday"
-  | "Friday"
-  | "Saturday"
-  | "Sunday"}`
-
-export type LdJsonSchedule = {
-  "@context": "https://schema.org"
-  "@type": "Schedule"
-
-  startDate: string // ISO 8601 date string
-  endDate?: string // ISO 8601 date string
-
-  duration?: string // ISO 8601 duration string, e.g., "PT1H" for one hour
-
-  repeatFrequency: string // e.g., "P1W" for weekly
-  repeatCount?: number // e.g., 10 for ten occurrences
-
-  byDay?: LdJsonByDay | LdJsonByDay[] // e.g., schema.org days like "MO", "TU"'
-  byMonth?: number // e.g., 5 for May
-  byMonthDay?: number // e.g., 15 for the 15th of the month
-  byMonthWeek?: number // e.g., 2 for the second week of the month
-
-  startTime: string // e.g., "14:00"
-  endTime?: string // e.g., "15:00"
-
-  scheduleTimezone: string // e.g., "America/New_York"
+export type IdReference = {
+	/** IRI identifying the canonical address of this object. */
+	"@id": string
 }
 
-export type LdJsonEventSchedule = {
-  eventSchedule: LdJsonSchedule | LdJsonSchedule[]
+export type Indexable = string | number | symbol
+export type Primitive = string | number | boolean | null | undefined | Array<Primitive> | { [key: string]: Primitive }
+
+export type CatholicChurchOrganization = Exclude<CatholicChurch, string>
+export type Freq = ReturnType<(typeof RRuleTemporal)["prototype"]["options"]>["freq"]
+
+export type RRULEByDay = "MO" | "TU" | "WE" | "TH" | "FR" | "SA" | "SU"
+
+export type SupportedSchemaDaysOfWeek = Exclude<
+	Extract<DayOfWeek, string>,
+	"https://schema.org/PublicHolidays" | "PublicHolidays"
+>
+
+export type ScheduleData = {
+	name?: string | SchemaValue<string, "name">
+	description?: string | SchemaValue<string, "description">
+	url?: string | SchemaValue<string, "url">
+	duration?: string | SchemaValue<string, "duration">
+}
+
+export type WeeklySchedule = {
+	[dayOfWeek: number]: (ScheduleData & {
+		dateTime: Temporal.ZonedDateTime
+	})[]
+}
+
+export type RruleWithData = {
+	rrule: RRuleTemporal
+	data: ScheduleData
 }

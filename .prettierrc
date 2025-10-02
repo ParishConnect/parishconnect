@@ -1,6 +1,7 @@
 {
   "printWidth": 120,
   "semi": false,
+  "useTabs": true,
   "overrides": [
     {
       "files": "*.ts,*.js",

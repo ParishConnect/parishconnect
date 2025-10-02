@@ -11,7 +11,8 @@
   "dependencies": {
     "@js-temporal/polyfill": "^0.5.1",
     "lit": "^3.3.1",
-    "rrule-temporal": "^1.2.1"
+    "rrule-temporal": "^1.2.1",
+    "schema-dts": "^1.1.5"
   },
   "devDependencies": {
     "typescript": "~5.8.3",
