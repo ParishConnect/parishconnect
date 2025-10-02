@@ -1,7 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill"
 import { unfurlEventsFromLdJson } from "./ld+json-to-rrule.ts"
-import type { CatholicChurchOrganization, WeeklySchedule } from "./types.ts"
-import { betweenNowAndNextWeek } from "./utils.ts"
+import type { CatholicChurchOrganization, ScheduleData, WeeklySchedule } from "./types.ts"
+import { betweenNowAndNextWeek, extractSchemaText } from "./utils.ts"
 
 export function getWeeklySchedule(church: CatholicChurchOrganization): WeeklySchedule {
 	const rules = unfurlEventsFromLdJson(church)
@@ -30,17 +30,27 @@ export function getWeeklySchedule(church: CatholicChurchOrganization): WeeklySch
 	return weeklySchedule
 }
 
-export function weeklyScheduleToLocale(weeklySchedule: WeeklySchedule): { [dayOfWeek: string]: string[] } {
-	const localeSchedule: { [dayOfWeek: string]: string[] } = {}
+export function weeklyScheduleToLocale(weeklySchedule: WeeklySchedule): {
+	[dayOfWeek: string]: ({ time: string } & ScheduleData)[]
+} {
+	const localeSchedule: {
+		[dayOfWeek: string]: ({ time: string } & ScheduleData)[]
+	} = {}
 
 	for (const [dayOfWeek, events] of Object.entries(weeklySchedule)) {
-		localeSchedule[dayOfWeek] = events.map((event) => {
+		localeSchedule[dayOfWeek] = events.map(({ dateTime, description, duration, name, url }) => {
 			const options: Intl.DateTimeFormatOptions = {
 				hour: "numeric",
 				minute: "2-digit",
-				timeZoneName: event.dateTime.timeZoneId !== Temporal.Now.timeZoneId() ? "shortGeneric" : undefined,
+				timeZoneName: dateTime.timeZoneId !== Temporal.Now.timeZoneId() ? "shortGeneric" : undefined,
 			}
-			return event.dateTime.toLocaleString(undefined, options)
+			return {
+				time: dateTime.toLocaleString(undefined, options),
+				name: extractSchemaText(name),
+				description: extractSchemaText(description),
+				duration: extractSchemaText(duration),
+				url: extractSchemaText(url),
+			} as { time: string } & ScheduleData
 		})
 	}
 

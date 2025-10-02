@@ -28,10 +28,10 @@ export type SupportedSchemaDaysOfWeek = Exclude<
 >
 
 export type ScheduleData = {
-	name?: string | SchemaValue<string, "name">
-	description?: string | SchemaValue<string, "description">
-	url?: string | SchemaValue<string, "url">
-	duration?: string | SchemaValue<string, "duration">
+	name?: string
+	description?: string
+	url?: string
+	duration?: string
 }
 
 export type WeeklySchedule = {

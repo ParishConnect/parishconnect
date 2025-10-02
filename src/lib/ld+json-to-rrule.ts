@@ -137,7 +137,7 @@ export function unfurlEventsFromLdJson(church: CatholicChurchOrganization): RRul
 				data: {
 					name: extractSchemaText(event.name) ?? undefined,
 					description: extractSchemaText(event.description) ?? undefined,
-					url: event.url ?? undefined,
+					url: extractSchemaText(event.url) ?? undefined,
 					duration: extractSchemaText(event.duration) ?? undefined,
 				} satisfies ScheduleData,
 			}))

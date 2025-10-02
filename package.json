@@ -11,7 +11,11 @@
 	},
 	"dependencies": {
 		"@js-temporal/polyfill": "^0.5.1",
+		"i18next": "^25.5.3",
+		"i18next-browser-languagedetector": "^8.2.0",
+		"i18next-resources-to-backend": "^1.2.1",
 		"lit": "^3.3.1",
+		"lit-i18n": "^4.1.0",
 		"rrule-temporal": "^1.2.1",
 		"schema-dts": "^1.1.5"
 	},

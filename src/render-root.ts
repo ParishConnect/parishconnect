@@ -14,7 +14,13 @@ export class RenderRoot extends LitElement {
 	#weeklySchedule = this.#parishData ? weeklyScheduleToLocale(getWeeklySchedule(this.#parishData)) : {}
 
 	render() {
+		if (!this.#parishData) return html`<div>No parish data found on this page.</div>`
+
 		return html/*html*/ `<div>
+			<span>${this.#parishData.name}</span>
+
+			<pre>${JSON.stringify(this.#parishData.address, null, 2)}</pre>
+
 			<h2>Weekly Schedule</h2>
 			${Object.entries(this.#weeklySchedule).map(
 				([day, times]) => html/*html*/ `
@@ -25,7 +31,17 @@ export class RenderRoot extends LitElement {
 							})}</strong
 						>
 						<ul>
-							${times.length > 0 && times.map((time) => html/*html*/ `<li><time>${time}</time></li>`)}
+							${times.length > 0 &&
+							times.map(
+								({ time, name, duration, description, url }) => html/*html*/ `<li>
+									<span>${name}</span>
+									<span> - </span>
+									<time>${time}</time>
+									<span>${duration ? Temporal.Duration.from(duration).toLocaleString(undefined) : ""}</span>
+									<span>${description ? ` - ${description}` : ""}</span>
+									${url ? html`<a href="${url}" target="_blank" rel="noopener">More info</a>` : ""}
+								</li>`
+							)}
 						</ul>
 					</div>
 				`
