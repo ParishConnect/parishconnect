@@ -1,10 +1,7 @@
-import type { UserConfig } from 'vite'
+import { defineConfig } from 'vite'
+import preact from '@preact/preset-vite'
 
-export default {
-  build: {
-    lib: {
-      entry: 'src/widget.ts',
-      fileName: () => `parishconnect-widget.js`,
-    },
-  },
-} satisfies UserConfig
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [preact()],
+})

@@ -15,6 +15,10 @@ export const betweenNowAndNextWeek = [
 	Temporal.Now.zonedDateTimeISO().add({ days: 7 }).startOfDay().subtract({ milliseconds: 1 }),
 ] as const
 
+export function getDayInSameWeek(date: Temporal.ZonedDateTime, destDayOfWeek: number): Temporal.ZonedDateTime {
+	return date.add({ days: destDayOfWeek - date.dayOfWeek })
+}
+
 export function safelyParseJSON(jsonString: string): any | null {
 	try {
 		return JSON.parse(jsonString)
@@ -28,9 +32,10 @@ export function unleaf(obj: SchemaValue<any, any>): Primitive {
 	if (Array.isArray(obj)) {
 		return obj.map(unleaf)
 	} else if (obj && typeof obj === "object") {
+		if (obj && typeof obj === "object" && "@value" in obj) {
+			return (obj as Role<any, any>)["@value"]
+		}
 		return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, unleaf(value)]))
-	} else if (obj && typeof obj === "object" && "@value" in obj) {
-		return (obj as Role<any, any>)["@value"]
 	}
 
 	return obj

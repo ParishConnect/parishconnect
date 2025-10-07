@@ -5,25 +5,28 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"typecheck": "tsc --noEmit",
-		"build": "tsc && vite build",
-		"preview": "vite preview"
+		"build": "tsc -b && vite build",
+		"preview": "vite preview",
+		"lint": "oxlint"
 	},
 	"dependencies": {
 		"@js-temporal/polyfill": "^0.5.1",
 		"i18next": "^25.5.3",
 		"i18next-browser-languagedetector": "^8.2.0",
 		"i18next-resources-to-backend": "^1.2.1",
-		"lit": "^3.3.1",
-		"lit-i18n": "^4.1.0",
-		"rrule-temporal": "^1.2.1",
-		"schema-dts": "^1.1.5"
+		"preact": "^10.27.2",
+		"preact-custom-element": "^4.5.1",
+		"rrule-temporal": "^1.2.1"
 	},
 	"devDependencies": {
-		"typescript": "~5.8.3",
-		"vite": "npm:rolldown-vite@7.1.12"
+		"@preact/preset-vite": "^2.10.2",
+		"@types/node": "^24.6.0",
+		"oxlint": "^1.20.0",
+		"schema-dts": "^1.1.5",
+		"typescript": "~5.9.3",
+		"vite": "npm:rolldown-vite@7.1.14"
 	},
 	"overrides": {
-		"vite": "npm:rolldown-vite@7.1.12"
+		"vite": "npm:rolldown-vite@7.1.14"
 	}
 }
