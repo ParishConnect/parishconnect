@@ -1,70 +1,54 @@
-import { Temporal } from "@js-temporal/polyfill"
 import i18next from "i18next"
 import I18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
 import resourcesToBackend from "i18next-resources-to-backend"
 import register from "preact-custom-element"
-import { useMemo } from "preact/hooks"
-import { findParishDataOnDocument } from "./lib/find-parish-data-on-document.ts"
-import { getWeeklySchedule, weeklyScheduleToLocale } from "./lib/get-weekly-schedule.ts"
-import { getDayInSameWeek } from "./lib/utils.ts"
-import css from "./widget.css?inline"
+import { isAdminPage } from "./lib/utils.ts"
+import { useLayoutEffect, useState } from "preact/hooks"
+import en from "./locale/en.json"
+import { lazy, Suspense } from "preact/compat"
+
+const ParishConnectForm = lazy(() => import("./form.tsx"))
 
 i18next
 	.use(I18nextBrowserLanguageDetector)
 	.use(resourcesToBackend((language: string) => import(`./locale/${language}.json`)))
-	.init({ fallbackLng: "en" })
+	.init({ fallbackLng: "en", debug: true, resources: { en: { translation: en } } })
 
 function ParishConnectWidget() {
-	const parishData = useMemo(() => findParishDataOnDocument(), [])
+	const [i18nextReady, setI18nextReady] = useState(false)
+	const [showEditForm, setShowEditForm] = useState(true)
+	const showEditButton = isAdminPage()
 
-	const weeklySchedule = useMemo(() => {
-		if (!parishData) return {}
+	useLayoutEffect(() => {
+		if (i18next.isInitialized) {
+			setI18nextReady(true)
+		} else {
+			const handleInitialized = () => setI18nextReady(true)
+			i18next.on("initialized", handleInitialized)
+			return () => {
+				i18next.off("initialized", handleInitialized)
+			}
+		}
+	}, [])
 
-		return weeklyScheduleToLocale(getWeeklySchedule(parishData))
-	}, [parishData])
-
-	if (!parishData) {
-		return <div>{i18next.t("no-parish-data")}</div>
+	if (!i18nextReady) {
+		return null // or a loading indicator
 	}
 
 	return (
 		<>
-			<style>{css}</style>
-			<div>
-				<span>{parishData.name}</span>
-
-				<pre>{JSON.stringify(parishData.address, null, 2)}</pre>
-
-				<h2>Weekly Schedule</h2>
-				{Object.entries(weeklySchedule).map(([day, times]) => (
-					<div key={day}>
-						<strong>
-							{getDayInSameWeek(Temporal.Now.zonedDateTimeISO(), Number(day)).toLocaleString(undefined, {
-								weekday: "long",
-							})}
-						</strong>
-						<ul>
-							{times.length > 0 &&
-								times.map(({ time, name, duration, description, url }) => (
-									<li key={time + name + duration + description + url}>
-										<span>{name}</span>
-										<span> - </span>
-										<time>{time}</time>
-										<span>{duration ? " - " + Temporal.Duration.from(duration).toLocaleString(undefined) : ""}</span>
-										<span>{description ? ` - ${description}` : ""}</span>
-										{url ? (
-											<a href={url} target="_blank" rel="noopener">
-												More info
-											</a>
-										) : null}
-									</li>
-								))}
-						</ul>
-					</div>
-				))}
-			</div>
+			{showEditButton && (
+				<button onClick={() => setShowEditForm(true)} className="edit-schedule-button button">
+					{i18next.t("edit-parish-information")}
+				</button>
+			)}
+			{showEditForm && (
+				<Suspense fallback={<div className="loading-text">Loading...</div>}>
+					<ParishConnectForm />
+				</Suspense>
+			)}
 		</>
 	)
 }
 
-register(ParishConnectWidget, "parishconnect-widget", [], { shadow: true })
+register(ParishConnectWidget, "parishconnect-widget", [], { shadow: true, mode: "closed" })

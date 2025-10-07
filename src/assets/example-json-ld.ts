@@ -11,7 +11,6 @@ export const exampleJsonLd = {
 	openingHours: "Tu,We,Th 09:00-16:00",
 	isAccessibleForFree: true,
 	publicAccess: true,
-	smokingAllowed: false,
 
 	keywords: "Catholic, Church, Parish, Kitchener, Mass, Sacraments",
 
