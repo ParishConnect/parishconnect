@@ -156,3 +156,14 @@ export function isAdminPage(): boolean {
 		!!searchParams.get("admin")
 	)
 }
+
+export function shortUUID(): string {
+	// Generate a random 128-bit number and convert it to a base64 string
+	const array = new Uint8Array(16)
+	crypto.getRandomValues(array)
+	let base64 = btoa(String.fromCharCode(...array))
+	return base64
+		.replace(/\+/g, "-") // Replace '+' with '-'
+		.replace(/\//g, "_") // Replace '/' with '_'
+		.replace(/=+$/, "") // Remove trailing '='
+}

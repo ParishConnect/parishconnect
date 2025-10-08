@@ -1,23 +1,11 @@
 import i18next from "i18next"
-import I18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
-import resourcesToBackend from "i18next-resources-to-backend"
-import register from "preact-custom-element"
-import { isAdminPage } from "./lib/utils.ts"
-import { useLayoutEffect, useState } from "preact/hooks"
-import en from "./locale/en.json"
-import { lazy, Suspense } from "preact/compat"
+import { lazy, StrictMode, Suspense, useLayoutEffect, useState } from "react"
+import ReactDOM from "react-dom/client"
 
-const ParishConnectForm = lazy(() => import("./form.tsx"))
-
-i18next
-	.use(I18nextBrowserLanguageDetector)
-	.use(resourcesToBackend((language: string) => import(`./locale/${language}.json`)))
-	.init({ fallbackLng: "en", debug: true, resources: { en: { translation: en } } })
+const ParishConnectForm = lazy(() => import("./form/form.tsx"))
 
 function ParishConnectWidget() {
 	const [i18nextReady, setI18nextReady] = useState(false)
-	const [showEditForm, setShowEditForm] = useState(true)
-	const showEditButton = isAdminPage()
 
 	useLayoutEffect(() => {
 		if (i18next.isInitialized) {
@@ -32,23 +20,21 @@ function ParishConnectWidget() {
 	}, [])
 
 	if (!i18nextReady) {
-		return null // or a loading indicator
+		return null
 	}
 
 	return (
-		<>
-			{showEditButton && (
-				<button onClick={() => setShowEditForm(true)} className="edit-schedule-button button">
-					{i18next.t("edit-parish-information")}
-				</button>
-			)}
-			{showEditForm && (
-				<Suspense fallback={<div className="loading-text">Loading...</div>}>
-					<ParishConnectForm />
-				</Suspense>
-			)}
-		</>
+		<Suspense fallback={<div className="loading-text">Loading...</div>}>
+			<ParishConnectForm />
+		</Suspense>
 	)
 }
 
-register(ParishConnectWidget, "parishconnect-widget", [], { shadow: true, mode: "closed" })
+const rootElement = document.createElement("div")
+document.body.appendChild(rootElement)
+const root = ReactDOM.createRoot(rootElement)
+root.render(
+	<StrictMode>
+		<ParishConnectWidget />
+	</StrictMode>
+)

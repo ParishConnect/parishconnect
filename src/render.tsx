@@ -1,5 +1,5 @@
 import { Temporal } from "@js-temporal/polyfill"
-import { useMemo } from "preact/hooks"
+import { useMemo } from "react"
 import { findParishDataOnDocument } from "./lib/find-parish-data-on-document.ts"
 import { getWeeklySchedule, weeklyScheduleToLocale } from "./lib/get-weekly-schedule.ts"
 import { getDayInSameWeek } from "./lib/utils.ts"
