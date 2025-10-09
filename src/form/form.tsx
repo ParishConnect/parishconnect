@@ -1,35 +1,27 @@
 import i18next from "i18next"
 import { useState } from "react"
-import { shortUUID } from "../lib/utils.ts"
 import { useAppForm } from "./fields.tsx"
-// import "./form.css"
+import "./form.css"
 import {
 	CatholicChurchOrganizationSchema,
 	ServiceTypes,
 	WeekDaysLD,
 	type CatholicChurchOrganization,
 } from "./schema.ts"
+import { findParishDataOnDocument } from "../lib/find-parish-data-on-document.ts"
 
 export default function ParishConnectForm() {
 	const [outputLD, setOutputLD] = useState<string>()
 	const hostUrl = window.location.host
+	const jsonLDOnPage = findParishDataOnDocument() ?? {}
 
 	const form = useAppForm({
 		defaultValues: {
 			name: window.document.title,
 			url: hostUrl,
 			"@id": `https://${hostUrl}#church`,
-			event: [
-				{
-					"@type": "Event",
-					id: shortUUID(),
-					type: "mass",
-					name: "Holy Mass",
-					eventStatus: "https://schema.org/EventScheduled",
-					eventSchedule: [],
-					startDate: new Date().toISOString().split("T")[0],
-				},
-			],
+			event: [],
+			...jsonLDOnPage,
 		} as Partial<CatholicChurchOrganization>,
 		validators: { onChange: CatholicChurchOrganizationSchema },
 		listeners: {
@@ -49,8 +41,8 @@ export default function ParishConnectForm() {
 	})
 
 	return (
-		<div className="parishconnect-form-container">
-			<output
+		<div className="parishconnect-form-container parishconnect-root">
+			{/* <output
 				style={{
 					position: "absolute",
 					top: 20,
@@ -65,7 +57,7 @@ export default function ParishConnectForm() {
 				}}
 			>
 				{outputLD}
-			</output>
+			</output> */}
 			<form
 				onSubmit={(e) => {
 					e.preventDefault()
@@ -76,6 +68,7 @@ export default function ParishConnectForm() {
 				<form.AppField name="name" children={(field) => <field.TextField isRequired />} />
 				<form.AppField name="url" children={(field) => <field.TextField isRequired type="url" />} />
 				<form.AppField name="telephone" children={(field) => <field.TextField type="tel" />} />
+				<form.Subscribe selector={(state) => state.values.timezone} children={(timezone) => <span>{timezone}</span>} />
 				{/* TODO */}
 				{/* <form.AppField name="openingHours" children={(field) => <field.TextField field={field} />} /> */}
 				{/* TODO */}
@@ -88,9 +81,11 @@ export default function ParishConnectForm() {
 						potentialAction ? (
 							<fieldset className="donation-options-fieldset">
 								<legend>{i18next.t("labels.potentialAction.label")}</legend>
-								<form.AppField name="potentialAction.name" children={(field) => <field.TextField />} />
-								<form.AppField name="potentialAction.target" children={(field) => <field.TextField type="url" />} />
-								<form.AppField name="potentialAction.priceCurrency" children={(field) => <field.TextField />} />
+								<div className="xstack">
+									<form.AppField name="potentialAction.name" children={(field) => <field.TextField />} />
+									<form.AppField name="potentialAction.target" children={(field) => <field.TextField type="url" />} />
+									<form.AppField name="potentialAction.priceCurrency" children={(field) => <field.TextField />} />
+								</div>
 							</fieldset>
 						) : (
 							<button
@@ -157,93 +152,74 @@ export default function ParishConnectForm() {
 					}
 				</form.Subscribe>
 
-				<form.Field mode="array" name="event">
-					{(field) => (
-						<fieldset className="mass-schedules-fieldset">
-							<legend>{i18next.t("labels.event.label")}</legend>
-							{field.state.value?.map(({ name }, index) => (
-								<fieldset key={index} className="schedule-entry">
-									<legend>{i18next.t("labels.event.entry", { name })}</legend>
-									<form.AppField name={`event[${index}].name`} children={(f) => <f.TextField />} />
-									<form.AppField
-										name={`event[${index}].type`}
-										children={(f) => <f.RadioGroupField orientation="horizontal" options={ServiceTypes} />}
-									/>
-									<form.AppField name={`event[${index}].duration`} children={(f) => <f.TextField />} />
+				{ServiceTypes.map((type, index) => {
+					return (
+						<fieldset key={type} className={`${type}-schedules`}>
+							<legend>{i18next.t("labels.event.entry", { name: i18next.t(type) })}</legend>
+							{/* <form.AppField name={`event[${index}].name`} children={(f) => <f.TextField />} />
+							<form.AppField name={`event[${index}].duration`} children={(f) => <f.TextField />} /> */}
 
-									<form.Field mode="array" name={`event[${index}].eventSchedule`}>
-										{(scheduleField) => (
-											<fieldset className="mass-schedule-fieldset">
-												<legend>{i18next.t("labels.event.eventSchedule.label")}</legend>
-												{scheduleField.state.value?.map((_, scheduleIndex) => (
-													<div key={scheduleIndex} className="mass-schedule-entry">
-														<form.AppField
-															name={`event[${index}].eventSchedule[${scheduleIndex}].startDate`}
-															children={(f) => <f.DatePickerField />}
-														/>
-														<form.AppField
-															name={`event[${index}].eventSchedule[${scheduleIndex}].startTime`}
-															children={(f) => <f.TextField />}
-														/>
-														<form.AppField
-															name={`event[${index}].eventSchedule[${scheduleIndex}].byDay`}
-															children={(f) => <f.CheckBoxGroupField options={WeekDaysLD} />}
-														/>
-														<form.AppField
-															name={`event[${index}].eventSchedule[${scheduleIndex}].description`}
-															children={(f) => <f.TextField />}
-														/>
+							<form.Field mode="array" name={`event[${index}].eventSchedule`}>
+								{(scheduleField) => (
+									<fieldset className="mass-schedule-fieldset">
+										<legend>{i18next.t("labels.event.eventSchedule.label")}</legend>
 
-														<button type="button" onClick={() => scheduleField.removeValue(scheduleIndex)}>
-															{i18next.t("labels.event.eventSchedule.remove")}
-														</button>
-													</div>
-												))}
+										{scheduleField.state.value?.map((_, scheduleIndex) => (
+											<div key={scheduleIndex} className="mass-schedule-entry">
+												<div className="xstack">
+													<form.AppField
+														name={`event[${index}].eventSchedule[${scheduleIndex}].startDate`}
+														children={(f) => <f.DatePickerField />}
+													/>
+													<form.AppField
+														name={`event[${index}].eventSchedule[${scheduleIndex}].startTime`}
+														children={(f) => <f.TimePickerField />}
+													/>
+												</div>
+												<form.AppField
+													name={`event[${index}].eventSchedule[${scheduleIndex}].byDay`}
+													children={(f) => (
+														<f.CheckBoxGroupField
+															options={WeekDaysLD.map((day) => ({
+																value: day,
+																label: i18next.t(day, { context: "short" }),
+															}))}
+															className="day-picker"
+														/>
+													)}
+												/>
+												<form.AppField
+													name={`event[${index}].eventSchedule[${scheduleIndex}].description`}
+													children={(f) => <f.TextField />}
+												/>
 
-												<button
-													type="button"
-													onClick={() =>
-														scheduleField.pushValue({
-															"@type": "Schedule",
-															startDate: new Date().toISOString().split("T")[0],
-															startTime: "12:00",
-															repeatFrequency: "P1W",
-															byDay: [],
-															scheduleTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-														})
-													}
-												>
-													{i18next.t("labels.event.eventSchedule.add")}
+												<button type="button" onClick={() => scheduleField.removeValue(scheduleIndex)}>
+													{i18next.t("labels.event.eventSchedule.remove")}
 												</button>
-											</fieldset>
-										)}
-									</form.Field>
+											</div>
+										))}
 
-									<button type="button" onClick={() => field.removeValue(index)}>
-										{i18next.t("labels.event.remove")}
-									</button>
-								</fieldset>
-							))}
-
-							<button
-								type="button"
-								onClick={() =>
-									field.pushValue({
-										"@type": "Event",
-										type: "mass",
-										id: shortUUID(),
-										name: "Holy Mass",
-										eventStatus: "https://schema.org/EventScheduled",
-										startDate: new Date().toISOString().split("T")[0],
-										eventSchedule: [],
-									})
-								}
-							>
-								{i18next.t("labels.event.add")}
-							</button>
+										<button
+											type="button"
+											onClick={() =>
+												scheduleField.pushValue({
+													"@type": "Schedule",
+													startDate: new Date().toISOString().split("T")[0],
+													startTime: "12:00",
+													repeatFrequency: "P1W",
+													byDay: [],
+													scheduleTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+												})
+											}
+										>
+											{i18next.t("labels.event.eventSchedule.add")}
+										</button>
+									</fieldset>
+								)}
+							</form.Field>
 						</fieldset>
-					)}
-				</form.Field>
+					)
+				})}
 
 				<form.AppForm>
 					<form.SubmitButton />

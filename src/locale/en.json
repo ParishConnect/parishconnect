@@ -31,14 +31,15 @@
 		},
 		"event": {
 			"label": "Events",
-			"add": "Add Event",
+			"add": "Add {{type}} Schedule",
 			"remove": "Remove Event",
 			"name": "Name",
 			"type": "Type",
 			"duration": "Duration",
 			"startDate": "Start Date",
 			"startTime": "Start Time",
-			"entry": "Schedule for {{name}}",
+			"entry": "{{name}} Schedule",
+
 			"eventSchedule": {
 				"add": "Add Schedule",
 				"remove": "Remove Schedule",
@@ -51,6 +52,7 @@
 			}
 		}
 	},
+
 	"submitting": "Submitting",
 	"https://schema.org/Monday": "Monday",
 	"https://schema.org/Tuesday": "Tuesday",
@@ -58,5 +60,13 @@
 	"https://schema.org/Thursday": "Thursday",
 	"https://schema.org/Friday": "Friday",
 	"https://schema.org/Saturday": "Saturday",
-	"https://schema.org/Sunday": "Sunday"
+	"https://schema.org/Sunday": "Sunday",
+
+	"https://schema.org/Monday_short": "MO",
+	"https://schema.org/Tuesday_short": "TU",
+	"https://schema.org/Wednesday_short": "WE",
+	"https://schema.org/Thursday_short": "TH",
+	"https://schema.org/Friday_short": "FR",
+	"https://schema.org/Saturday_short": "SA",
+	"https://schema.org/Sunday_short": "SU"
 }

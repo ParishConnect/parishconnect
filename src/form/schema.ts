@@ -1,5 +1,4 @@
-import z from "zod"
-import { shortUUID } from "../lib/utils"
+import * as z from "zod"
 
 export const ServiceTypes = ["mass", "confession", "adoration"] as const
 export const WeekDaysLD = [
@@ -25,6 +24,8 @@ export const CatholicChurchOrganizationSchema = z
 		publicAccess: z.literal(true).default(true),
 
 		availableLanguage: z.array(z.string()).optional(),
+
+		timezone: z.string().default(Intl.DateTimeFormat().resolvedOptions().timeZone),
 
 		keywords: z.string().optional(),
 
@@ -53,47 +54,48 @@ export const CatholicChurchOrganizationSchema = z
 
 		event: z
 			.array(
-				z
-					.object({
-						"@type": z.literal("Event").default("Event"),
-						type: z.enum(ServiceTypes).default("mass"),
-						id: z.string(),
-						url: z.string().optional(),
-						name: z.string(),
-						duration: z.string().optional(),
-						location: z
-							.object({
-								"@type": z.literal("Place").default("Place"),
-								name: z.string(),
-								address: z.object({ "@id": z.string().includes("#address") }),
-							})
-							.optional(),
-						organizer: z.object({ "@id": z.string().includes("#church") }).optional(),
-						description: z.string().optional(),
-						eventStatus: z.string(),
-						startDate: z.string(),
-						eventSchedule: z.array(
-							z.object({
-								"@type": z.literal("Schedule").default("Schedule"),
-								startDate: z.string(),
-								startTime: z.string(),
-								repeatFrequency: z.string(),
-								description: z.string().optional(),
-								isVigil: z.boolean().optional(),
-								byDay: z.array(z.enum(WeekDaysLD)),
-								scheduleTimezone: z.string(),
-							})
-						),
-					})
-					.default({
-						"@type": "Event",
-						type: "mass",
-						id: shortUUID(),
-						name: "Holy Mass",
-						eventStatus: "https://schema.org/EventScheduled",
-						startDate: new Date().toISOString().split("T")[0],
-						eventSchedule: [],
-					})
+				z.object({
+					"@type": z.literal("Event").default("Event"),
+					type: z.enum(ServiceTypes).default("mass"),
+					url: z.string().optional(),
+					name: z.string().default("Holy Mass"),
+					duration: z.string().optional().default("PT1H"),
+					location: z
+						.array(
+							z.union([
+								z.object({
+									"@type": z.literal("Place").default("Place"),
+									name: z.string(),
+									address: z.object({ "@id": z.string().includes("#address") }),
+								}),
+							])
+						)
+						.optional(),
+					organizer: z.object({ "@id": z.string().includes("#church") }).optional(),
+					description: z.string().optional(),
+					eventStatus: z
+						.enum([
+							"https://schema.org/EventCancelled",
+							"https://schema.org/EventMovedOnline",
+							"https://schema.org/EventPostponed",
+							"https://schema.org/EventRescheduled",
+							"https://schema.org/EventScheduled",
+						])
+						.default("https://schema.org/EventScheduled"),
+					startDate: z.string().default(new Date().toISOString().split("T")[0]),
+					eventSchedule: z.array(
+						z.object({
+							"@type": z.literal("Schedule").default("Schedule"),
+							startDate: z.string(),
+							startTime: z.string(),
+							repeatFrequency: z.string(),
+							description: z.string().optional(),
+							isVigil: z.boolean().optional(),
+							byDay: z.array(z.enum(WeekDaysLD)),
+							scheduleTimezone: z.string().optional(),
+						})
+					),
+				})
 			)
 			.default([]),
 	})
@@ -103,35 +105,35 @@ export const CatholicChurchOrganizationSchema = z
 			schema.potentialAction.recipient["@id"] = schema["@id"]
 		}
 
-		if (schema.event && schema.event.length > 0) {
-			schema.event[0].organizer = { "@id": schema["@id"] }
-			if (schema.address) {
-				if (!schema.event[0].location) {
-					schema.event[0].location = {
+		// If address is provided, ensure each event location includes it as its first location
+		if (schema.event) {
+			schema.event = schema.event.map((event) => {
+				let locations = event.location
+				if (!Array.isArray(locations)) locations = []
+
+				if (!locations.find((loc) => loc["@type"] === "Place") && schema.address) {
+					locations.unshift({
 						"@type": "Place",
 						name: schema.name,
-						address: { "@id": schema.address["@id"] },
+						address: { "@id": `${schema.url}#address` },
+					})
+				}
+
+				const eventSchedule = event.eventSchedule.map((schedule) => {
+					if (!schedule.scheduleTimezone) {
+						schedule.scheduleTimezone = schema.timezone
 					}
-				} else {
-					schema.event[0].location.address = { "@id": schema.address["@id"] }
-				}
-			}
-		}
+					return schedule
+				})
 
-		if (schema.event) {
-			schema.event.forEach((event) => {
-				if (!event.location) {
-					// @ts-expect-error -- just need to stub this out
-					event.location = {}
-				}
-
-				event.location!["@type"] = "Place"
-				event.location!.name = schema.name
-				if (schema.address) {
-					event.location!.address = { "@id": schema.address ? schema.address["@id"] : `${schema["@id"]}#address` }
+				return {
+					...event,
+					eventSchedule,
+					location: locations,
 				}
 			})
 		}
+
 		return schema
 	})
 	.refine(

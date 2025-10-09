@@ -1,7 +1,9 @@
 import { CalendarDate, parseDate, parseTime, Time } from "@internationalized/date"
 import { createFormHook, createFormHookContexts, useForm, type AnyFieldApi } from "@tanstack/react-form"
+import clsx from "clsx"
 import i18next from "i18next"
-import { useCallback, useMemo } from "react"
+import { CalendarIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { useCallback, useMemo, type ComponentProps } from "react"
 import {
 	TextField as AriaTextField,
 	Button,
@@ -28,21 +30,29 @@ import {
 	SelectValue,
 	TimeField,
 	type CheckboxGroupProps,
-	type DateFieldProps,
+	type DatePickerProps,
 	type RadioGroupProps,
 	type SelectProps,
 	type TextFieldProps,
 	type TimeFieldProps,
 } from "react-aria-components"
 
-type Options = string[] | readonly string[]
+type Options =
+	| string[]
+	| readonly string[]
+	| { value: string; label: string }[]
+	| ReadonlyArray<{ value: string; label: string }>
 
 const { fieldContext, formContext, useFieldContext } = createFormHookContexts()
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
 	return field.state.meta.isTouched && !field.state.meta.isValid ? (
-		<FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+		<FieldError className="field-error">{field.state.meta.errors.join(", ")}</FieldError>
 	) : null
+}
+
+function FieldLabel({ field }: { field: AnyFieldApi }) {
+	return <Label className="label">{i18next.t(`labels.${field.name.replace(/\[[0-9]\]/gi, "")}`)}</Label>
 }
 
 function TextField(props: TextFieldProps) {
@@ -56,9 +66,10 @@ function TextField(props: TextFieldProps) {
 			onChange={field.handleChange}
 			validationBehavior="aria"
 			{...props}
+			className={clsx("text-field", props.className)}
 		>
-			<Label>{i18next.t(`labels.${field.name.replace(/\[[0-9]\]/gi, "")}`)}</Label>
-			<Input />
+			<FieldLabel field={field} />
+			<Input className="input" />
 			<FieldInfo field={field} />
 		</AriaTextField>
 	)
@@ -70,15 +81,15 @@ function SelectField<T extends Options>({ options, ...props }: { options: T } & 
 	const items = useMemo(
 		() =>
 			options.map((option) => ({
-				name: i18next.t(option),
-				id: option,
+				name: typeof option === "string" ? option : i18next.t(option.label),
+				id: typeof option === "string" ? option : option.value,
 			})),
 		[options, field.name]
 	)
 
 	const children = useCallback(
 		(item: { id: string; name: string }) => (
-			<ListBoxItem key={item.id} id={item.id}>
+			<ListBoxItem className="list-box-item" key={item.id} id={item.id}>
 				{item.name}
 			</ListBoxItem>
 		),
@@ -98,21 +109,24 @@ function SelectField<T extends Options>({ options, ...props }: { options: T } & 
 			}}
 			validationBehavior="aria"
 			{...props}
+			className={clsx("select-field", props.className)}
 		>
-			<Label>{i18next.t(`labels.${field.name.replace(/\[[0-9]\]/gi, "")}`)}</Label>
-			<Button>
-				<SelectValue />
-				<span aria-hidden="true">⬇️</span>
+			<FieldLabel field={field} />
+			<Button className="button">
+				<SelectValue className="select-value" />
+				<ChevronDownIcon className="chevron-down-icon" />
 			</Button>
-			<Popover>
-				<ListBox items={items}>{children}</ListBox>
+			<Popover className="parishconnect-root popover">
+				<ListBox className="list-box" items={items}>
+					{children}
+				</ListBox>
 			</Popover>
 			<FieldInfo field={field} />
 		</Select>
 	)
 }
 
-function DatePickerField(props: DateFieldProps<CalendarDate>) {
+function DatePickerField(props: DatePickerProps<CalendarDate>) {
 	const field = useFieldContext<string>()
 
 	return (
@@ -128,28 +142,31 @@ function DatePickerField(props: DateFieldProps<CalendarDate>) {
 			value={parseDate(field.state.value ?? "")}
 			name={field.name}
 			{...props}
+			className={clsx("date-picker", props.className)}
 		>
-			<Label>Date</Label>
-			<Group>
-				<DateInput>{(segment) => <DateSegment segment={segment} />}</DateInput>
-				<Button>
-					<span>⬇️</span>
+			<FieldLabel field={field} />
+			<Group className="group">
+				<DateInput className="date-input">{(segment) => <DateSegment segment={segment} />}</DateInput>
+				<Button className="button">
+					<CalendarIcon className="calendar-icon" />
 				</Button>
 			</Group>
 
-			<Popover>
-				<Dialog>
-					<Calendar>
+			<Popover className="parishconnect-root popover">
+				<Dialog className="dialog">
+					<Calendar className="calendar">
 						<header>
-							<Button slot="previous">
-								<span>⬅️</span>
+							<Button slot="previous" className="button">
+								<ChevronLeftIcon className="chevron-left-icon" />
 							</Button>
-							<Heading />
-							<Button slot="next">
-								<span>➡️</span>
+							<Heading className="heading" />
+							<Button slot="next" className="button">
+								<ChevronRightIcon className="chevron-right-icon" />
 							</Button>
 						</header>
-						<CalendarGrid>{(date) => <CalendarCell date={date} />}</CalendarGrid>
+						<CalendarGrid className="calendar-grid">
+							{(date) => <CalendarCell className="calendar-cell" date={date} />}
+						</CalendarGrid>
 					</Calendar>
 				</Dialog>
 			</Popover>
@@ -159,6 +176,15 @@ function DatePickerField(props: DateFieldProps<CalendarDate>) {
 
 function TimePickerField(props: TimeFieldProps<Time>) {
 	const field = useFieldContext<string>()
+	const parsedTime = useMemo(() => {
+		try {
+			return parseTime(field.state.value)
+		} catch (error) {
+			console.error("Failed to parse time:", field.state.value, error)
+			return parseTime("12:00")
+		}
+	}, [field.state.value])
+
 	return (
 		<TimeField
 			onChange={(time) => {
@@ -170,12 +196,13 @@ function TimePickerField(props: TimeFieldProps<Time>) {
 			validationBehavior="aria"
 			isRequired
 			isInvalid={!field.state.meta.isValid}
-			value={parseTime(field.state.value ?? "")}
+			value={parsedTime}
 			name={field.name}
 			{...props}
+			className={clsx("time-field", props.className)}
 		>
-			<Label>Event time</Label>
-			<DateInput>{(segment) => <DateSegment segment={segment} />}</DateInput>
+			<FieldLabel field={field} />
+			<DateInput className="date-input">{(segment) => <DateSegment segment={segment} />}</DateInput>
 		</TimeField>
 	)
 }
@@ -185,7 +212,7 @@ function SubmitButton() {
 	return (
 		<form.Subscribe selector={(state) => ({ isSubmitting: state.isSubmitting, isValid: state.isValid })}>
 			{({ isSubmitting, isValid }) => (
-				<Button type="submit" isDisabled={!isValid || isSubmitting}>
+				<Button className="button" type="submit" isDisabled={!isValid || isSubmitting}>
 					{isSubmitting ? i18next.t("submitting") : i18next.t("submit")}
 				</Button>
 			)}
@@ -208,12 +235,17 @@ function CheckBoxGroupField<T extends Options>({ options, ...props }: { options:
 			}}
 			validationBehavior="aria"
 			{...props}
+			className={clsx("checkbox-group-field", props.className)}
 		>
-			<Label>{i18next.t(`labels.${field.name.replace(/\[[0-9]\]/gi, "")}`)}</Label>
-			<Group>
+			<FieldLabel field={field} />
+			<Group className="group">
 				{options.map((option) => (
-					<Checkbox key={option} value={option}>
-						{i18next.t(option)}
+					<Checkbox
+						className="checkbox"
+						key={typeof option === "string" ? option : option.value}
+						value={typeof option === "string" ? option : option.value}
+					>
+						{typeof option === "string" ? i18next.t(option) : option.label}
 					</Checkbox>
 				))}
 			</Group>
@@ -233,18 +265,28 @@ function RadioGroupField<T extends Options>({ options, ...props }: { options: T 
 			onChange={field.handleChange}
 			validationBehavior="aria"
 			{...props}
+			className={clsx("radio-group-field", props.className)}
 		>
-			<Label>{i18next.t(`labels.${field.name.replace(/\[[0-9]\]/gi, "")}`)}</Label>
-			<Group>
+			<FieldLabel field={field} />
+			<Group className="group">
 				{options.map((option) => (
-					<Radio key={option} value={option}>
-						{i18next.t(option)}
+					<Radio
+						className="radio"
+						key={typeof option === "string" ? option : option.value}
+						value={typeof option === "string" ? option : option.value}
+					>
+						{typeof option === "string" ? i18next.t(option) : option.label}
 					</Radio>
 				))}
 			</Group>
 			<FieldInfo field={field} />
 		</RadioGroup>
 	)
+}
+
+function ReadonlyField(props: ComponentProps<"span">) {
+	const field = useFieldContext<string>()
+	return <span className={clsx("readonly-field", props.className)}>{field.state.value}</span>
 }
 
 export const { useAppForm } = createFormHook({
@@ -255,6 +297,7 @@ export const { useAppForm } = createFormHook({
 		DatePickerField,
 		RadioGroupField,
 		CheckBoxGroupField,
+		ReadonlyField,
 	},
 	formComponents: {
 		SubmitButton,

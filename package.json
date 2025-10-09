@@ -14,9 +14,11 @@
 		"@internationalized/date": "^3.10.0",
 		"@js-temporal/polyfill": "^0.5.1",
 		"@tanstack/react-form": "^1.23.6",
+		"clsx": "^2.1.1",
 		"i18next": "^25.5.3",
 		"i18next-browser-languagedetector": "^8.2.0",
 		"i18next-resources-to-backend": "^1.2.1",
+		"lucide-react": "^0.545.0",
 		"react": "^19.2.0",
 		"react-aria-components": "^1.13.0",
 		"react-dom": "^19.2.0",
@@ -33,9 +35,6 @@
 		"oxlint": "^1.20.0",
 		"schema-dts": "^1.1.5",
 		"typescript": "~5.9.3",
-		"vite": "npm:rolldown-vite@7.1.14"
-	},
-	"overrides": {
-		"vite": "npm:rolldown-vite@7.1.14"
+		"vite": "^7.1.9"
 	}
 }
