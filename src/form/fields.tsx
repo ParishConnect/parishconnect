@@ -45,14 +45,23 @@ type Options =
 
 const { fieldContext, formContext, useFieldContext } = createFormHookContexts()
 
+const fieldNameToClassName = (fieldName: string, prefix: string = "field") =>
+	`${prefix}-${fieldName.replace(/\[[0-9]\]/gi, "").replace(/\./g, "-")}`
+
 function FieldInfo({ field }: { field: AnyFieldApi }) {
 	return field.state.meta.isTouched && !field.state.meta.isValid ? (
-		<FieldError className="field-error">{field.state.meta.errors.join(", ")}</FieldError>
+		<FieldError className={clsx("field-error", fieldNameToClassName(field.name, "error"))}>
+			{field.state.meta.errors.join(", ")}
+		</FieldError>
 	) : null
 }
 
 function FieldLabel({ field }: { field: AnyFieldApi }) {
-	return <Label className="label">{i18next.t(`labels.${field.name.replace(/\[[0-9]\]/gi, "")}`)}</Label>
+	return (
+		<Label className={clsx("label", fieldNameToClassName(field.name, "label"))}>
+			{i18next.t(`labels.${field.name.replace(/\[[0-9]\]/gi, "")}`)}
+		</Label>
+	)
 }
 
 function TextField(props: TextFieldProps) {
@@ -66,7 +75,7 @@ function TextField(props: TextFieldProps) {
 			onChange={field.handleChange}
 			validationBehavior="aria"
 			{...props}
-			className={clsx("text-field", props.className)}
+			className={clsx("text-field", fieldNameToClassName(field.name), props.className)}
 		>
 			<FieldLabel field={field} />
 			<Input className="input" />
@@ -109,7 +118,7 @@ function SelectField<T extends Options>({ options, ...props }: { options: T } & 
 			}}
 			validationBehavior="aria"
 			{...props}
-			className={clsx("select-field", props.className)}
+			className={clsx("select-field", fieldNameToClassName(field.name), props.className)}
 		>
 			<FieldLabel field={field} />
 			<Button className="button">
@@ -142,7 +151,7 @@ function DatePickerField(props: DatePickerProps<CalendarDate>) {
 			value={parseDate(field.state.value ?? "")}
 			name={field.name}
 			{...props}
-			className={clsx("date-picker", props.className)}
+			className={clsx("date-picker", fieldNameToClassName(field.name), props.className)}
 		>
 			<FieldLabel field={field} />
 			<Group className="group">
@@ -199,7 +208,7 @@ function TimePickerField(props: TimeFieldProps<Time>) {
 			value={parsedTime}
 			name={field.name}
 			{...props}
-			className={clsx("time-field", props.className)}
+			className={clsx("time-field", fieldNameToClassName(field.name), props.className)}
 		>
 			<FieldLabel field={field} />
 			<DateInput className="date-input">{(segment) => <DateSegment segment={segment} />}</DateInput>
@@ -235,7 +244,7 @@ function CheckBoxGroupField<T extends Options>({ options, ...props }: { options:
 			}}
 			validationBehavior="aria"
 			{...props}
-			className={clsx("checkbox-group-field", props.className)}
+			className={clsx("checkbox-group-field", fieldNameToClassName(field.name), props.className)}
 		>
 			<FieldLabel field={field} />
 			<Group className="group">
@@ -265,7 +274,7 @@ function RadioGroupField<T extends Options>({ options, ...props }: { options: T 
 			onChange={field.handleChange}
 			validationBehavior="aria"
 			{...props}
-			className={clsx("radio-group-field", props.className)}
+			className={clsx("radio-group-field", fieldNameToClassName(field.name), props.className)}
 		>
 			<FieldLabel field={field} />
 			<Group className="group">
@@ -286,7 +295,11 @@ function RadioGroupField<T extends Options>({ options, ...props }: { options: T 
 
 function ReadonlyField(props: ComponentProps<"span">) {
 	const field = useFieldContext<string>()
-	return <span className={clsx("readonly-field", props.className)}>{field.state.value}</span>
+	return (
+		<span className={clsx("readonly-field", fieldNameToClassName(field.name), props.className)}>
+			{field.state.value}
+		</span>
+	)
 }
 
 export const { useAppForm } = createFormHook({

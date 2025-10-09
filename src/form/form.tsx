@@ -58,6 +58,11 @@ export default function ParishConnectForm() {
 			>
 				{outputLD}
 			</output> */}
+			<form.Subscribe
+				selector={(state) => state.values.name}
+				children={(name) => <h2>{i18next.t("form.title", { name })}</h2>}
+			/>
+
 			<form
 				onSubmit={(e) => {
 					e.preventDefault()
