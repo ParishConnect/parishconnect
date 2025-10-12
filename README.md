@@ -14,7 +14,7 @@ ParishConnect Widget is a simple widget that allows you to store and display par
 
 ## Basic Flow for Admins
 
-```mermaid
+```mmd
 flowchart TD
     A[Parish Admin Opens Widget Setup Wizard] --> B[Enter Mass Times, Address, Contact Info, Exceptions]
     B --> C[System Generates Embed Script & JSON-LD Snippet]
