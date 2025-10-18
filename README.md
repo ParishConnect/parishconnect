@@ -2,6 +2,30 @@
 
 ParishConnect Widget is a simple widget that allows you to store and display parish information such as mass times, name, address, phone number, email, and website. It is designed to be easily integrated into any website or application and to be **completely decentralized**. This means that you always own your data and it doesn't matter what platform(s) or services you use.
 
+## Monorepo Structure
+
+This project is organized as a Bun workspace monorepo with the following packages:
+
+- **[@parishconnect/schema](./packages/schema)** - Zod schemas and TypeScript types for parish data structures
+- **[@parishconnect/rrule-converter](./packages/rrule-converter)** - Utilities for converting between JSON-LD and RRule formats
+- **[@parishconnect/widget](./packages/widget)** - React widget for displaying and managing parish information
+
+## Development
+
+```bash
+# Install dependencies
+bun install
+
+# Run development server
+bun run dev
+
+# Build all packages
+bun run build
+
+# Lint all packages
+bun run lint
+```
+
 ## Features
 
 - ⚙️ **Easy Setup**: A simple setup wizard to configure your parish information and mass times.

@@ -1,0 +1,22 @@
+{
+	"name": "@parishconnect/schema",
+	"version": "0.0.0",
+	"type": "module",
+	"main": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"build": "tsc -b",
+		"lint": "oxlint"
+	},
+	"dependencies": {
+		"schema-dts": "^1.1.5",
+		"zod": "^4.1.12"
+	},
+	"devDependencies": {
+		"@types/node": "^24.6.0",
+		"oxlint": "^1.20.0",
+		"typescript": "~5.9.3"
+	}
+}
