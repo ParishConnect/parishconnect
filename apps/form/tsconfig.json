@@ -9,6 +9,5 @@
 		"moduleDetection": "force",
 		"noEmit": true,
 		"jsx": "react-jsx"
-	},
-	"references": [{ "path": "../schema" }]
+	}
 }

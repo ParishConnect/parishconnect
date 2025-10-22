@@ -79,17 +79,17 @@ importers:
         specifier: ^7.1.11
         version: 7.1.11(@types/node@24.9.1)
 
-  packages/dom-utils:
-    devDependencies:
-      '@parishconnect/schema':
-        specifier: workspace:*
-        version: link:../schema
-
-  packages/form:
+  apps/form:
     devDependencies:
       '@parishconnect/dom-utils':
         specifier: workspace:*
-        version: link:../dom-utils
+        version: link:../../packages/dom-utils
+      '@parishconnect/schema':
+        specifier: workspace:*
+        version: link:../../packages/schema
+
+  packages/dom-utils:
+    devDependencies:
       '@parishconnect/schema':
         specifier: workspace:*
         version: link:../schema

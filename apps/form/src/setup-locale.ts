@@ -1,7 +1,7 @@
 import i18next from "i18next"
 import I18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
 import resourcesToBackend from "i18next-resources-to-backend"
-import en from "./en.json" with { type: "json" }
+import en from "./locale/en.json" with { type: "json" }
 
 i18next
 	.use(I18nextBrowserLanguageDetector)
