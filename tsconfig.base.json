@@ -1,0 +1,29 @@
+{
+	"compileOnSave": false,
+	"compilerOptions": {
+		"composite": true,
+		"declaration": true,
+		"declarationMap": false,
+		"allowImportingTsExtensions": true,
+		"rootDir": ".",
+		"sourceMap": true,
+		"emitDeclarationOnly": true,
+		"outDir": "dist/out-tsc",
+		"moduleResolution": "bundler",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"importHelpers": true,
+		"target": "ES2022",
+		"module": "esnext",
+		"lib": ["es2022", "dom", "ESNext"],
+		"skipLibCheck": true,
+		"skipDefaultLibCheck": true,
+		"baseUrl": ".",
+		"paths": {
+			"@parishconnect/schema": ["packages/schema/src/main.ts"],
+			"@parishconnect/dom-utils": ["packages/dom-utils/src/main.ts"]
+		}
+	},
+	"include": ["@types/**/*.d.ts"],
+	"exclude": ["node_modules", "tmp"]
+}

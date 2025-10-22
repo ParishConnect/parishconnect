@@ -1,40 +1,35 @@
 {
-	"name": "widget",
+	"name": "parishconnect",
 	"private": true,
 	"version": "0.0.0",
-	"type": "module",
 	"scripts": {
-		"dev": "vite",
-		"build": "tsc -b && vite build",
-		"preview": "vite preview",
-		"lint": "oxlint"
+		"typecheck": "pnpm -r exec tsc"
 	},
-	"packageManager": "npm@10.9.2",
 	"dependencies": {
 		"@internationalized/date": "^3.10.0",
 		"@js-temporal/polyfill": "^0.5.1",
-		"@tanstack/react-form": "^1.23.6",
+		"@tanstack/react-form": "^1.23.7",
 		"clsx": "^2.1.1",
-		"i18next": "^25.5.3",
+		"i18next": "^25.6.0",
 		"i18next-browser-languagedetector": "^8.2.0",
 		"i18next-resources-to-backend": "^1.2.1",
-		"lucide-react": "^0.545.0",
+		"lucide-react": "^0.546.0",
 		"react": "^19.2.0",
 		"react-aria-components": "^1.13.0",
 		"react-dom": "^19.2.0",
 		"react-to-webcomponent": "^2.0.1",
-		"rrule-temporal": "^1.2.1",
+		"rrule-temporal": "^1.2.2",
 		"zod": "^4.1.12"
 	},
 	"devDependencies": {
-		"@types/node": "^24.6.0",
-		"@types/react": "^19.2.0",
-		"@types/react-dom": "^19.2.0",
+		"@types/node": "^24.9.1",
+		"@types/react": "^19.2.2",
+		"@types/react-dom": "^19.2.2",
 		"@vitejs/plugin-react": "^5.0.4",
-		"babel-plugin-react-compiler": "^19.1.0-rc.3",
-		"oxlint": "^1.20.0",
+		"babel-plugin-react-compiler": "19.1.0-rc.3",
+		"oxlint": "^1.23.0",
 		"schema-dts": "^1.1.5",
 		"typescript": "~5.9.3",
-		"vite": "^7.1.9"
+		"vite": "^7.1.11"
 	}
 }

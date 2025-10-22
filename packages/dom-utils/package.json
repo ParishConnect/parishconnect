@@ -1,0 +1,13 @@
+{
+	"name": "@parishconnect/dom-utils",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"main": "src/main.ts",
+	"scripts": {
+		"build": "tsc && vite build"
+	},
+	"devDependencies": {
+		"@parishconnect/schema": "workspace:*"
+	}
+}
