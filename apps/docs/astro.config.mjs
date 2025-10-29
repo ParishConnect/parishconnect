@@ -7,8 +7,8 @@ import cloudflare from "@astrojs/cloudflare"
 
 // https://astro.build/config
 export default defineConfig({
-	adapter: cloudflare(),
-	outDir: "../../dist/apps/docs",
+	adapter: cloudflare({ imageService: "compile" }),
+	site: "https://docs.parishconnect.io",
 	integrations: [
 		starlight({
 			plugins: [starlightThemeNext()],
