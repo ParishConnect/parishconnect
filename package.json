@@ -6,6 +6,7 @@
 		"typecheck": "pnpm -r exec tsc"
 	},
 	"dependencies": {
+		"@astrojs/cloudflare": "^12.6.10",
 		"@astrojs/starlight": "^0.36.1",
 		"@internationalized/date": "^3.10.0",
 		"@js-temporal/polyfill": "^0.5.1",

@@ -3,9 +3,12 @@ import { defineConfig } from "astro/config"
 import starlight from "@astrojs/starlight"
 import starlightThemeNext from "starlight-theme-next"
 import mermaid from "astro-mermaid"
+import cloudflare from "@astrojs/cloudflare"
 
 // https://astro.build/config
 export default defineConfig({
+	adapter: cloudflare(),
+	outDir: "../../dist/apps/docs",
 	integrations: [
 		starlight({
 			plugins: [starlightThemeNext()],
