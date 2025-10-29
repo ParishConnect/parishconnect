@@ -3,37 +3,36 @@ title: ParishConnect
 description: Decentralized tools for parishes.
 template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
-  image:
-    file: ../../assets/houston.webp
+  tagline: Decentralized tools for parishes built on the principles of subsidiarity and solidarity.
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: Get ParishConnect for my website
+      link: /guides/masstimes-widget/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
-      icon: external
-      variant: minimal
+    - text: Dev Reference
+      link: /reference/widget
+      icon: document
+      variant: secondary
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components"
+import { Card, CardGrid, LinkButton } from "@astrojs/starlight/components"
 
 ## Next steps
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
-	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display~~~~ ~~~~a sidebar on this page.
-	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
-	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
-	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
-	</Card>
+	<Card title="Decentralized Mass Times" icon="seti:clock">
+    View and manage your parish's mass, confession, devotion, etc. schedule with ease.
+    <br />
+    ParishConnect automatically sends updates to mass time searching websites and search engines.
+  </Card>
+  <Card title="Subsidiarity and Solidarity" icon="seti:clock">
+    ParishConnect is built on the principles of subsidiarity and solidarity, empowering parishes to manage their own data while contributing to a larger network.
+    <br />
+    <b>All of your data is owned by you.</b>
+  </Card>
+	<Card title="Always Fresh Church Information" icon="information">
+    ParishConnect automatically formats and sends up to date information about your parish to aggregators and search engines.
+  </Card>
+  <Card title="Open Source" icon="seti:git">
+    ParishConnect is open source software. You can view the source code on <LinkButton href="https://github.com/parishconnect/parishconnect" target='_blank' variant="minimal">GitHub</LinkButton>
+  </Card>
 </CardGrid>

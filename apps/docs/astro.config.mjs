@@ -1,28 +1,39 @@
 // @ts-check
 import { defineConfig } from "astro/config"
 import starlight from "@astrojs/starlight"
+import starlightThemeNext from "starlight-theme-next"
+import mermaid from "astro-mermaid"
 
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
 		starlight({
+			plugins: [starlightThemeNext()],
 			title: "ParishConnect Docs",
+			customCss: ["./src/styles/custom.css"],
+			logo: {
+				src: "./src/assets/blue_logo.png",
+			},
 			lastUpdated: true,
 			defaultLocale: "en",
-			social: [{ icon: "github", label: "GitHub", href: "https://github.com/parishconnect/parishconnect" }],
+			social: [
+				{ icon: "github", label: "GitHub", href: "https://github.com/parishconnect/parishconnect" },
+				{ icon: "x.com", label: "X", href: "https://x.com/parishconnect" },
+			],
 			sidebar: [
 				{
 					label: "Guides",
-					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: "Example Guide", slug: "guides/example" },
-					],
+					autogenerate: { directory: "guides" },
 				},
 				{
 					label: "Reference",
 					autogenerate: { directory: "reference" },
 				},
 			],
+		}),
+		mermaid({
+			theme: "forest",
+			autoTheme: true,
 		}),
 	],
 })
